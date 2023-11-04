@@ -10,8 +10,28 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r cars}
-dat <- read.csv("DATA/global_power_plant_database_v_1_3/global_power_plant_database.csv")
+library(geosphere)
+library(dplyr)
+dat <- global_power_plant_database <- read_csv("../DATA/global_power_plant_database_v_1_3/global_power_plant_database.csv")
+View(global_power_plant_database)
 dat <- dat[dat$country_long == "Brazil",]
+coord_df <- as.data.frame(dat[,c("gppd_idnr", "latitude", "longitude")])
+
+pt_interest <- c(1,1)
+
+num_factory_within_dist <- function(pt_interest, factory_coord, dist_in_m) {
+  res <- get_dist_to_factory(pt_interest, factory_coord)
+  filtered <- res %>% filter(dist_to_pt < dist_in_m)
+  return(filtered)
+}
+
+get_dist_to_factory <- function(pt_interest, factory_coord) {
+  res <- sapply(1:nrow(factory_coord), function(i) distm(factory_coord[i,c(2,3)], pt_interest, fun = distHaversine))
+  factory_coord$dist_to_pt <- res
+  return(factory_coord)
+}
+
+num_factory_within_dist(pt_interest, coord_df, 6509000)
 
 ```
 

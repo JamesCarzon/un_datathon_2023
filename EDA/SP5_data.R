@@ -1,3 +1,4 @@
+# Setup ----
 library(ncdf4)
 library(dplyr)
 
@@ -7,13 +8,11 @@ setwd('Desktop/un_datathon_2023')
 # Define datapath
 datapath <- 'DATA/S5P/'
 
+# Load nc datasets ----
 nclat <- c()
 nclon <- c()
 ncno2 <- c()
 ncno2prec <- c()
-# nclat <- list()
-# nclon <- list()
-# ncno2 <- list()
 ctr <- 1
 for (nc_fname in list.files(datapath)) {
   print(nc_fname)
@@ -28,9 +27,9 @@ for (nc_fname in list.files(datapath)) {
   ncno2prec <- c(ncno2prec, unlist(no2prec))
 }
 
+# Subset points ----
 # Get points within bounding box of Brazil
-# lat = [-35, 5]
-# lon = [-75, -35]
+# lat = [-35, 5], lon = [-75, -35]
 bbox_bool <- between(nclat, -35, 5) & between(nclon, -75, -35)
 sum(bbox_bool) # 596531 points in bounding box
 
@@ -48,8 +47,8 @@ ncno2 <- ncno2[na_bool]
 ncno2prec <- ncno2prec[na_bool]
 
 length(ncno2) # 5632650 points
-length(unique(c(length(nclon), length(nclat), length(ncno2), length(ncno2prec)))) 
-
+# Check that lengths are all the same 
+length(unique(c(length(nclon), length(nclat), length(ncno2), length(ncno2prec)))) == 1
 
 # Plotting ----
 # Plot all points - takes some time to run

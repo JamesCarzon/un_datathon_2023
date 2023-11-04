@@ -10,6 +10,7 @@ library(tidyverse)
 library(ggmap)
 
 ```
+(Very informal messing around so far)
 ```{r}
 spatial_confounding_data <- read_delim("~/Documents/extra-projects/un-datathon-2023/analysis_dat.tab")
 ```
@@ -36,6 +37,7 @@ tm_shape(World) +
   tm_polygons("HPI")
 
 ```
+(From tmap vignette)
 ```{r}
 data(World, rivers)
 
@@ -51,8 +53,11 @@ tm_format("World")
 
 ## End(Not run)
 ```
-tutorial by https://milospopovic.net/crisp-topography-map-with-r/
+So their native datasets might not be super informative but the framework could be useful
 
+
+tutorial by https://milospopovic.net/crisp-topography-map-with-r/
+Simply making a topographical map of a given country
 ```{r}
 # libraries we need
 libs <- c("elevatr", "terra", "tidyverse", 
@@ -144,13 +149,90 @@ country_map
 
 Try another country?
 ```{r}
-brazil_transformed <- get_sf("Brazil", res = "5")
+brazil_transformed <- get_sf("Brazil", res = "10")
 brazil_elevation <- get_elevation_data(brazil_transformed, res = 4)
 get_elevation_map(brazil_elevation)
 ```
 
 
+Can I do this a bit more simply with just accessing the package functions directly?
 
+Gotta get full rectangle data:
+```{r}
+library(rnaturalearth)
+
+target_crs <- "+proj=longlat +datum=WGS84 +no_defs"
+
+map <- ne_download(scale = "large", type = "countries",
+                   returnclass = "sf")
+map <- st_transform(map, crs = target_crs)
+```
+
+
+
+
+FOCUSING ON BRAZIL
+Brazil lat-long coords: top = 5, bottom = -35, left = -75, right = -35
+```{r}
+brazil_latlong <- c(left = -75, bottom = -35,
+       right = -35, top = 5)
+
+brazil_window <- st_sfc(st_point(c(-75, -35)), #left, bottom
+                        st_point(c(-35, 5)), #right, top
+                        crs = 4326)
+
+brazil_window_sf <- brazil_window %>% 
+  st_transform(crs = target_crs) %>% 
+  st_coordinates()
+
+region_brazil <- c("Brazil", "French Guiana", "Suriname", "Guyana",
+                   "Venezuela", "Colombia", "Peru", "Bolivia", 
+                   "Paraguay", "Argentina", "Uruguay", "France")
+
+map <- map %>% 
+  filter(SOVEREIGNT %in% region_brazil)
+```
+So that gives me the sf dataframe with the outline of Brazil?
+```{r}
+ggplot(map) +
+  geom_sf() +
+  coord_sf(xlim = brazil_window_sf[, "X"],
+           ylim = brazil_window_sf[, "Y"]) 
+```
+
+
+Yay for appropriate region map 
+Now for the actual elevation data
+```{r}
+br_elevation <- get_elev_raster(
+		locations = map, 
+		z = 6, 
+		clip = "locations") 
+
+br_elevation_df <- as.data.frame(br_elevation, xy = T) %>%
+		na.omit()
+
+colnames(br_elevation_df)[3] <- "elevation"
+
+br_elevation_df <- br_elevation_df %>% 
+  mutate(elevation = ifelse(elevation > 3000, 3000, elevation), 
+         elevation = ifelse(elevation < 0, NA, elevation))
+```
+Note: cutting off elevation at 3000m because the highest point in Brazil is this mountain, so as not to get thrown off by the Andes to the west
+https://en.wikipedia.org/wiki/Pico_da_Neblina#:~:text=Pico%20da%20Neblina%20(Portuguese%20pronunciation,on%20the%20Brazil%2DVenezuela%20border.
+
+
+
+Mapping the elevation
+```{r}
+ggplot(map) +
+  geom_sf(colour = "black") +
+  coord_sf(xlim = brazil_window_sf[, "X"],
+           ylim = brazil_window_sf[, "Y"]) +
+  geom_tile(data = br_elevation_df, 
+  			aes(x = x, y = y, fill = elevation)) +
+  scale_fill_gradient(low = "white", high = "navy")
+```
 
 
 

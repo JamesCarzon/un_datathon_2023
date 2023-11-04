@@ -1,0 +1,29 @@
+---
+title: "GP_modeling"
+author: "James Carzon"
+date: "11/4/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+require(tidyverse)
+require(reticulate)
+```
+
+```{r}
+reticulate::conda_list()
+reticulate::use_condaenv("py3.9", required=TRUE)
+py_config()
+```
+
+```{python}
+import numpy as np
+import pandas as pd
+import sklearn
+import matplotlib.pyplot as plt
+```
+

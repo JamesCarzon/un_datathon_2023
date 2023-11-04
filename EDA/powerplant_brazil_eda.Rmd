@@ -1,0 +1,26 @@
+---
+title: "powerplant_brazil_eda"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r cars}
+dat <- read.csv("DATA/global_power_plant_database_v_1_3/global_power_plant_database.csv")
+dat <- dat[dat$country_long == "Brazil",]
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

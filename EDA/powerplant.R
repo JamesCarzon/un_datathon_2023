@@ -1,7 +1,7 @@
 library(geosphere)
 library(dplyr)
 dat <- read.csv("DATA/global_power_plant_database_v_1_3/global_power_plant_database.csv")
-dat <- dat[dat$country_long %in% c("Brazil"),]
+dat <- dat[dat$country_long %in% c("Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela"),]
 factory_coord <- as.data.frame(dat[,c("gppd_idnr", "latitude", "longitude")])
 
 pt_interest <- c(1,1) # 

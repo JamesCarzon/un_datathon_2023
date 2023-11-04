@@ -1,0 +1,156 @@
+---
+title: "UN Datathon work"
+author: "Meg Ellingwood"
+date: "2023-11-03"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggmap)
+
+```
+```{r}
+spatial_confounding_data <- read_delim("~/Documents/extra-projects/un-datathon-2023/analysis_dat.tab")
+```
+
+Setting up a US map
+```{r}
+# US <- c(left = -125, bottom = 24,
+#         right = -67, top = 49)
+# 
+# register_stadiamaps("682d676b-3e06-4933-ad87-65994afa1362")
+# 
+# US_map <- get_map(location = c(lon = -95.3632715, lat = 29.7632836), zoom = "auto",
+#                      source = "osm")
+# 
+# ggmap(US_map)
+```
+ggmap doesn't work anymore oof
+
+```{r}
+library(tmap)
+
+data("World")
+tm_shape(World) +
+  tm_polygons("HPI")
+
+```
+```{r}
+data(World, rivers)
+
+qtm(rivers)
+
+## Not run: 
+tm_shape(World) +
+    tm_fill() +
+tm_shape(rivers) +
+    tm_lines(col="black", lwd="scalerank", scale=2, legend.lwd.show = FALSE) +
+tm_style("cobalt", title = "Rivers of the World") +
+tm_format("World")
+
+## End(Not run)
+```
+tutorial by https://milospopovic.net/crisp-topography-map-with-r/
+
+```{r}
+# libraries we need
+libs <- c("elevatr", "terra", "tidyverse", 
+	"sf", "giscoR", "marmap")
+
+# install missing libraries
+installed_libs <- libs %in% rownames(installed.packages())
+if (any(installed_libs == F)) {
+  install.packages(libs[!installed_libs])
+}
+
+# load libraries
+invisible(lapply(libs, library, character.only = T))
+
+crsLONGLAT <- "+proj=longlat +datum=WGS84 +no_defs"
+
+get_sf <- function(country_name = "Italy", country_transformed, res = "10") {
+	
+	country_sf <- giscoR::gisco_get_countries(
+    	year = "2016",
+    	epsg = "4326",
+    	resolution = res,
+    	country = country_name)
+	
+	country_transformed <- st_transform(country_sf, crs = crsLONGLAT)
+
+	return(country_transformed)
+}
+
+country_transformed <- get_sf()
+```
+
+
+```{r}
+get_elevation_data <- function(country_transformed, country_elevation_df, res = 9) {
+
+	country_elevation <- get_elev_raster(
+		locations = country_transformed, 
+		z = res, 
+		clip = "locations") 
+
+	country_elevation_df <- as.data.frame(country_elevation, xy = T) %>%
+		na.omit()
+	
+	colnames(country_elevation_df)[3] <- "elevation"
+
+	return(country_elevation_df)
+}
+
+country_elevation_df <- get_elevation_data(country_transformed)
+```
+
+```{r}
+get_elevation_map <- function(country_elevation_df) {
+
+	country_map <- ggplot() +
+  		geom_tile(data = country_elevation_df, 
+  			aes(x = x, y = y, fill = elevation)) +
+  		scale_fill_etopo() +
+	  coord_sf(crs = crsLONGLAT)+
+  		theme_minimal() +
+  		theme(text = element_text(color = "#22211d"),
+    		axis.line = element_blank(),
+    		axis.text.x = element_blank(),
+    		axis.text.y = element_blank(),
+    		axis.ticks = element_blank(),
+    		axis.title.x = element_blank(),
+    		axis.title.y = element_blank(),
+    		legend.position = "none",
+   		  	panel.grid.major = element_line(color = "white", size = 0.2),
+    		panel.grid.minor = element_blank(),
+    		plot.title = element_text(size=18, color="grey20", hjust=1, vjust=-5),
+    		plot.caption = element_text(size=8, color="grey70", hjust=.15, vjust=20),
+    		plot.margin = unit(c(t=0, r=0, b=0, l=0),"lines"), #added these narrower margins to enlarge maps
+    		plot.background = element_rect(fill = "white", color = NA), 
+    		panel.background = element_rect(fill = "white", color = NA),
+    		panel.border = element_blank()) +
+		labs(x = "", 
+    		y = NULL, 
+    		title = "Topographic map of ITALY")
+
+	return(country_map)
+}
+
+country_map <- get_elevation_map(country_elevation_df)
+
+country_map
+```
+
+Try another country?
+```{r}
+brazil_transformed <- get_sf("Brazil", res = "5")
+brazil_elevation <- get_elevation_data(brazil_transformed, res = 4)
+get_elevation_map(brazil_elevation)
+```
+
+
+
+
+
+

@@ -12,18 +12,27 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 require(tidyverse)
 require(reticulate)
+require(data.table)
 ```
 
 ```{r}
 reticulate::conda_list()
-reticulate::use_condaenv("py3.9", required=TRUE)
 py_config()
+
+S5P_no2 <- fread("../DATA/S5P_no2.csv")
+urbDens <- fread("../DATA/urbDens.csv")
+global_power_plant <- fread("../DATA/global_power_plant_database_v_1_3/global_power_plant_database.csv")
 ```
 
 ```{python}
 import numpy as np
 import pandas as pd
 import sklearn
+import scipy
 import matplotlib.pyplot as plt
+```
+
+```{python}
+
 ```
 

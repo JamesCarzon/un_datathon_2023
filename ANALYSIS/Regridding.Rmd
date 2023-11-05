@@ -1,0 +1,39 @@
+---
+title: "Regridding"
+author: "James Carzon"
+date: "11/4/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+require(tidyverse)
+require(reticulate)
+require(data.table)
+```
+
+```{r}
+reticulate::conda_list()
+py_config()
+
+S5P_no2 <- fread("../DATA/S5P_no2.csv")
+urbDens <- fread("../DATA/urbDens.csv")
+global_power_plant <- fread("../DATA/global_power_plant_database_v_1_3/global_power_plant_database.csv")
+```
+
+```{python}
+import numpy as np
+import pandas as pd
+import sklearn
+import scipy
+import matplotlib.pyplot as plt
+import rpy2.robjects as ro
+```
+
+```{python}
+
+```
+

@@ -18,13 +18,12 @@ import matplotlib.pyplot as plt
 ```
 
 ```{python}
-data = pd.read_csv("../DATA/regridded_data.csv", index_col=0)
-data['elevation'] = 10*scipy.stats.norm.rvs(size=data.shape[0])
-data['dist_to_plant'] = 10*scipy.stats.norm.rvs(size=data.shape[0])
-data = data.dropna(axis=0)
-
-
+data = pd.read_csv("../DATA/processed_data.csv", index_col=0)
+data['elevation'] = 10*scipy.stats.norm.rvs(size=data.shape[0]) # Fake elevation values
 ```
+
+We specify a Matern kernel with shape parameter 1.5 and with a vector of 
+initial length scales equal to 1.
 
 ```{python}
 kernel = gp.kernels.Matern(
@@ -40,16 +39,18 @@ model = gp.GaussianProcessRegressor(
 )
 ```
 
-```{python}
-X = data[['latitude', 'longitude', 'popdens', 'elevation', 'dist_to_plant']].sample(n=1000, random_state=2023)
-y = data[['NO2gm']].sample(n=1000, random_state=2023)
+Specify input data X and y.
 
-X.shape
+```{python}
+X = data[['latitude', 'longitude', 'popdens', 'elevation', 'plant_dist']].sample(1000, random_state=2023)
+y = data[['NO2gm']].sample(1000, random_state=2023)
 ```
+
+Fit the model by learning the length scales by MLE, and read the learned 
+parameters.
 
 ```{python}
 model.fit(X, y)
 
 model.kernel_.get_params()
 ```
-

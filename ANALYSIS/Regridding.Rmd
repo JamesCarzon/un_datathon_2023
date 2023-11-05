@@ -26,23 +26,13 @@ from global_land_mask import globe
 
 ```{python}
 S5P_no2 = pd.read_csv("../DATA/S5P_no2.csv", index_col=0)
-urbDens = pd.read_csv("../DATA/urbDens.csv", index_col=0)
-global_power_plant = pd.read_csv("../DATA/global_power_plant_database_v_1_3/global_power_plant_database.csv")
+urbDens = pd.read_csv("../DATA/urbDens_data.csv", index_col=0)
+powerPlants = pd.read_csv("../DATA/powerplants_feature.csv", index_col=0)
+S5P_no2['plant_dist'] = powerPlants.min_dist_bad
+S5P_no2.NO2gm[S5P_no2.NO2gm < 0] = float('NaN')
 ```
 
-```{python}
-print(np.min(S5P_no2.latitude), np.max(S5P_no2.latitude))
-print(np.min(S5P_no2.longitude), np.max(S5P_no2.longitude))
-
-print(np.min(urbDens.latitude), np.max(urbDens.latitude))
-print(np.min(urbDens.longitude), np.max(urbDens.longitude))
-
-plt.figure()
-popdens = plt.scatter(urbDens.longitude, urbDens.latitude, c=np.log(urbDens.popdens), s=1.)
-plt.colorbar(popdens)
-plt.show()
-
-```
+We regrid urban density to the NO2 data grid by linear interpolation.
 
 ```{python}
 xi = np.array(S5P_no2.loc[:, ['latitude', 'longitude']])
@@ -57,11 +47,20 @@ regridded = scipy.interpolate.griddata(
 )
 
 plt.figure()
-popdens_rg = plt.scatter(S5P_no2.longitude, S5P_no2.latitude, c=np.log(regridded), s=1.)
+popdens_rg = plt.scatter(
+  S5P_no2.longitude,
+  S5P_no2.latitude,
+  c=np.log(regridded),
+  s=1.
+)
 plt.colorbar(popdens_rg)
 plt.show()
 
 ```
+
+After regridding with linear interpolation, points over the oceans within the 
+convex hull of the continent's border are assigned nonzero population. We mask 
+these points.
 
 ```{python}
 is_land = []
@@ -70,14 +69,39 @@ for i in range(len(xi)):
     regridded[i] = float('NaN')
 
 plt.figure()
-popdens_rg = plt.scatter(S5P_no2.longitude, S5P_no2.latitude, c=regridded, s=1.)
+popdens_rg = plt.scatter(
+  S5P_no2.longitude,
+  S5P_no2.latitude,
+  c=np.log(regridded),
+  s=1.
+)
+
 plt.colorbar(popdens_rg)
 plt.show()
 ```
 
+We downsample to our domain of interest.
+
 ```{python}
 S5P_no2['popdens'] = regridded
+downsampled = S5P_no2[(S5P_no2.latitude <= -19) & (S5P_no2.latitude >= -24) & (S5P_no2.longitude <= -42.5) & (S5P_no2.longitude >= -47.5)]
 
-S5P_no2.to_csv("../DATA/regridded_data.csv")
+plt.figure()
+downsampled_plot = plt.scatter(
+  downsampled.longitude,
+  downsampled.latitude,
+  c=np.log(downsampled.popdens),
+  s=1.
+)
+
+plt.colorbar(downsampled_plot)
+plt.show()
+```
+
+Save the fully processed data set.
+
+```{python}
+downsampled = downsampled.dropna(axis=0)
+downsampled.dropna(axis=0).to_csv("../DATA/processed_data.csv")
 ```
 

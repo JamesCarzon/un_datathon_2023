@@ -130,6 +130,7 @@ print(t1-t0)
 
 popdensyr_bbox_df$popdens_cat <- factor(cat_popdens, levels=c('<1', '1-5', '5-25', '25-250', 
                                                               '250-1,000', '>1,000'))
+# Optionally: Set own colors
 library(RColorBrewer) 
 palette <- brewer.pal(6,"YlOrRd")
 

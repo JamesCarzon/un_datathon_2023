@@ -90,3 +90,5 @@ no2_df <- data.frame('latitude' = nclat,
                      'NO2mol_prec' = ncno2prec)
 
 write.csv(no2_df, paste0(savepath, 'S5P_no2.csv'), row.names=TRUE)
+
+no2_df <- read.csv(paste0(savepath, 'S5P_no2.csv'), row.names=1)

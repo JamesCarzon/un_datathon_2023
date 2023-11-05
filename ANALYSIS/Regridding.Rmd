@@ -15,25 +15,69 @@ require(reticulate)
 require(data.table)
 ```
 
-```{r}
-reticulate::conda_list()
-py_config()
-
-S5P_no2 <- fread("../DATA/S5P_no2.csv")
-urbDens <- fread("../DATA/urbDens.csv")
-global_power_plant <- fread("../DATA/global_power_plant_database_v_1_3/global_power_plant_database.csv")
-```
-
 ```{python}
 import numpy as np
 import pandas as pd
 import sklearn
 import scipy
 import matplotlib.pyplot as plt
-import rpy2.robjects as ro
+from global_land_mask import globe
 ```
 
 ```{python}
+S5P_no2 = pd.read_csv("../DATA/S5P_no2.csv", index_col=0)
+urbDens = pd.read_csv("../DATA/urbDens.csv", index_col=0)
+global_power_plant = pd.read_csv("../DATA/global_power_plant_database_v_1_3/global_power_plant_database.csv")
+```
 
+```{python}
+print(np.min(S5P_no2.latitude), np.max(S5P_no2.latitude))
+print(np.min(S5P_no2.longitude), np.max(S5P_no2.longitude))
+
+print(np.min(urbDens.latitude), np.max(urbDens.latitude))
+print(np.min(urbDens.longitude), np.max(urbDens.longitude))
+
+plt.figure()
+popdens = plt.scatter(urbDens.longitude, urbDens.latitude, c=np.log(urbDens.popdens), s=1.)
+plt.colorbar(popdens)
+plt.show()
+
+```
+
+```{python}
+xi = np.array(S5P_no2.loc[:, ['latitude', 'longitude']])
+points = np.array(urbDens.loc[:, ['latitude', 'longitude']])
+values = np.array(urbDens.loc[:, 'popdens'])
+regridded = scipy.interpolate.griddata(
+  points=points,
+  values=values,
+  xi=xi,
+  method='linear',
+  rescale=True
+)
+
+plt.figure()
+popdens_rg = plt.scatter(S5P_no2.longitude, S5P_no2.latitude, c=np.log(regridded), s=1.)
+plt.colorbar(popdens_rg)
+plt.show()
+
+```
+
+```{python}
+is_land = []
+for i in range(len(xi)):
+  if globe.is_ocean(*xi[i]):
+    regridded[i] = float('NaN')
+
+plt.figure()
+popdens_rg = plt.scatter(S5P_no2.longitude, S5P_no2.latitude, c=regridded, s=1.)
+plt.colorbar(popdens_rg)
+plt.show()
+```
+
+```{python}
+S5P_no2['popdens'] = regridded
+
+S5P_no2.to_csv("../DATA/regridded_data.csv")
 ```
 

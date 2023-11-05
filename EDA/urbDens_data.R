@@ -207,6 +207,6 @@ ggsave(paste0('DATA/popdens_plots/', slice, '_catplot.png'),
        dpi=300)
 
 # Save dataframe ----
-write.csv(popdensyr_bbox_df, paste0(savepath, 'urbDens.csv'), row.names=TRUE)
+write.csv(popdensyr_bbox_df, paste0(savepath, 'urbDens_data.csv'), row.names=TRUE)
 
-popdensyr_bbox_df <- read.csv(paste0(savepath, 'urbDens.csv'), row.names=1)
+popdensyr_bbox_df <- read.csv(paste0(savepath, 'urbDens_data.csv'), row.names=1)

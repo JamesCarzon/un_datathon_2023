@@ -4,7 +4,7 @@ This repo contains the work of the Scotty XD team for the United Nations Datatho
 
 # Usage
 
-The work in this repo depends on the following requirements:
+The work in this repo depends on the following requirements:\
 R libraries
 * reticulate
 * tidyverse

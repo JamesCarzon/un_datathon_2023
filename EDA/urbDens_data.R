@@ -1,16 +1,20 @@
 # Setup ----
+# Load libraries
 library(ncdf4)
 library(dplyr)
-library(melt)
+library(reshape)
+library(purrr)
 library(ggplot2)
+
+# Optionally: Set own colors
+library(RColorBrewer) 
+palette <- brewer.pal(6,"YlOrRd")
 
 # Set working directory
 setwd('/Users/mayashen/Desktop/un_datathon_2023')
 
 # Load data ----
-# Data downloaded from: https://search.earthdata.nasa.gov/search?fi=TROPOMI&fst0=Atmosphere&fsm0=Atmospheric%20Chemistry&fs10=Nitrogen%20Compounds
-# Temporal Start:, Temporal End: TO DO: Ask James what date/time range we searched over
-# TO DO: Add names of swathes we took 
+# Data downloaded from: https://sedac.ciesin.columbia.edu/data/set/gpw-v4-population-density-rev11/data-download
 
 # Define paths
 datapath <- 'DATA/gpw-v4-population-density-rev11_totpop_2pt5_min_nc/'
@@ -35,6 +39,7 @@ for (slice in 1:5) {
 }
 
 # Check that fifth slice is the most recent (2020)...?
+t0 <- Sys.time()
 for (slice in 1:5) {
   popdensyr <- popdens[,,slice]
   # popdensyr[is.na(popdensyr)] <- 0
@@ -48,8 +53,8 @@ for (slice in 1:5) {
   popdensyr_bbox <- popdensyr[lon_bbox_bool, lat_bbox_bool]
   
   popdensyr_bbox_df <- melt(popdensyr_bbox)
-  popdensyr_bbox_df$latitude <- lat_bbox[popdensyr_bbox_df$Var2]
-  popdensyr_bbox_df$longitude <- lon_bbox[popdensyr_bbox_df$Var1]
+  popdensyr_bbox_df$latitude <- lat_bbox[popdensyr_bbox_df$X2]
+  popdensyr_bbox_df$longitude <- lon_bbox[popdensyr_bbox_df$X1]
   popdensyr_bbox_df$popdens <- popdensyr_bbox_df$value
   popdensyr_bbox_df <- popdensyr_bbox_df[, c('latitude', 'longitude', 'popdens')]
   
@@ -60,12 +65,62 @@ for (slice in 1:5) {
   
   ggplot(data=popdensyr_bbox_df, aes(x=longitude, y=latitude, col=log(popdens))) +
     geom_point(size=0.2, alpha=0.5)
-  ggsave(paste0('DATA/popdens_plots/', slice, '_plot.png'),
+  ggsave(paste0('DATA/popdens_plots/cont_', slice, '_plot.png'),
+         width=7.25,
+         height=6.25,
+         units='in',
+         dpi=300)
+  
+  cat_popdens_mx <- matrix(NA, nrow=length(popdensyr_bbox_df$popdens), ncol=6)
+  cat_lb <- c(-Inf, 1, 5, 25, 250, 1000)
+  cat_ub <- c(1, 5, 25, 250, 1000, Inf)
+  for (cat_i in 1:6) {
+    cat_popdens_i <- between(popdensyr_bbox_df$popdens, cat_lb[cat_i], cat_ub[cat_i])
+    cat_popdens_mx[, cat_i] <- cat_popdens_i
+  }
+  # No population density values at the boundaries
+  unique(rowSums(cat_popdens_mx))
+  
+  cat_popdens_df <- melt(cat_popdens_mx)
+  cat_popdens_df <- cat_popdens_df[cat_popdens_df$value,]
+  
+  popdens_cat_mapfn <- function(cat_i) {
+    if (cat_i == 1) {
+      return('<1')
+    } else if (cat_i == 2) {
+      return('1-5')
+    } else if (cat_i == 3) {
+      return('5-25')
+    } else if (cat_i == 4) {
+      return('25-250')
+    } else if (cat_i == 5) {
+      return('250-1,000')
+    } else {
+      return('>1,000')
+    }
+  }
+  cat_popdens <- unlist(map(cat_popdens_df$X2, popdens_cat_mapfn))
+  cat_popdens_order <- sort(cat_popdens_df$X1, index.return=T)$ix
+  cat_popdens <- cat_popdens[cat_popdens_order]
+  popdensyr_bbox_df$popdens_cat <- factor(cat_popdens, levels=c('<1', '1-5', '5-25', '25-250', 
+                                                                '250-1,000', '>1,000'))
+  
+  ggplot(data=popdensyr_bbox_df, aes(x=longitude, y=latitude, col=popdens_cat)) +
+    geom_point(size=0.2, alpha=0.5) +
+    scale_color_manual(values = c('<1' = palette[1], 
+                                  '1-5' = palette[2], 
+                                  '5-25' = palette[3], 
+                                  '25-250' = palette[4], 
+                                  '250-1,000' = palette[5], 
+                                  '>1,000' = palette[6])) 
+  ggsave(paste0('DATA/popdens_plots/cat_', slice, '_plot.png'),
          width=7.25,
          height=6.25,
          units='in',
          dpi=300)
 }
+t1 <- Sys.time()
+print(t1-t0)
 
 # Get fifth slice ----
 slice <- 5
@@ -98,35 +153,38 @@ ggplot(data=popdensyr_bbox_df, aes(x=longitude, y=latitude, col=log(popdens))) +
   geom_point(size=0.2, alpha=0.5)
 
 # Plot population density grouped according to web plots
-# !! Warning: Takes a while to run !!
 # https://sedac.ciesin.columbia.edu/data/set/gpw-v4-population-density-rev11/maps
-t0 <- Sys.time()
-pb <- txtProgressBar(min = 0,      # Minimum value of the progress bar
-                     max = nrow(popdensyr_bbox_df), # Maximum value of the progress bar
-                     style = 3,    # Progress bar style (also available style = 1 and style = 2)
-                     width = 100,   # Progress bar width. Defaults to getOption("width")
-                     char = "=")   # Character used to create the bar
-cat_popdens <- c()
-for (i in 1:nrow(popdensyr_bbox_df)) {
-  setTxtProgressBar(pb, i)
-  val <- popdensyr_bbox_df$popdens[i]
-  if (val < 1) {
-    cat_popdens <- c(cat_popdens, '<1')
-  } else if ((val >= 1) & (val < 5)) {
-    cat_popdens <- c(cat_popdens, '1-5')
-  } else if ((val >= 5) & (val < 25)) {
-    cat_popdens <- c(cat_popdens, '5-25')
-  } else if ((val >= 25) & (val < 250)) {
-    cat_popdens <- c(cat_popdens, '25-250')
-  } else if ((val >= 250) & (val < 1000)) {
-    cat_popdens <- c(cat_popdens, '250-1,000')
-  } else if (val >= 1000) {
-    cat_popdens <- c(cat_popdens, '>1,000')
+
+cat_popdens_mx <- matrix(NA, nrow=length(popdensyr_bbox_df$popdens), ncol=6)
+cat_lb <- c(-Inf, 1, 5, 25, 250, 1000)
+cat_ub <- c(1, 5, 25, 250, 1000, Inf)
+for (cat_i in 1:6) {
+  cat_popdens_i <- between(popdensyr_bbox_df$popdens, cat_lb[cat_i], cat_ub[cat_i])
+  cat_popdens_mx[, cat_i] <- cat_popdens_i
+}
+# No population density values at the boundaries
+unique(rowSums(cat_popdens_mx))
+
+
+cat_popdens_df <- melt(cat_popdens_mx)
+cat_popdens_df <- cat_popdens_df[cat_popdens_df$value,]
+
+popdens_cat_mapfn <- function(cat_i) {
+  if (cat_i == 1) {
+    return('<1')
+  } else if (cat_i == 2) {
+    return('1-5')
+  } else if (cat_i == 3) {
+    return('5-25')
+  } else if (cat_i == 4) {
+    return('25-250')
+  } else if (cat_i == 5) {
+    return('250-1,000')
+  } else {
+    return('>1,000')
   }
 }
-close(pb)
-t1 <- Sys.time()
-print(t1-t0)
+cat_popdens <- unlist(map(cat_popdens_df$X2, popdens_cat_mapfn))
 
 popdensyr_bbox_df$popdens_cat <- factor(cat_popdens, levels=c('<1', '1-5', '5-25', '25-250', 
                                                               '250-1,000', '>1,000'))
@@ -150,3 +208,5 @@ ggsave(paste0('DATA/popdens_plots/', slice, '_catplot.png'),
 
 # Save dataframe ----
 write.csv(popdensyr_bbox_df, paste0(savepath, 'urbDens.csv'), row.names=TRUE)
+
+popdensyr_bbox_df <- read.csv(paste0(savepath, 'urbDens.csv'), row.names=1)

@@ -4,19 +4,18 @@ This repo contains the work of the Scotty XD team for the United Nations Datatho
 
 # Usage
 
-The work in this repo depends on the following requirements:\
-R libraries
-* reticulate
-* tidyverse
-* ncdf4
-* dplyr
-* melt
-* ggplot2
-* RColorBrewer
-
-Python packages
-* numpy
-* matplotlib
-* pandas
-* scipy
-* scikit-learn
+The work in this repo depends on the following requirements:
+* R libraries
+    + reticulate
+    + tidyverse
+    + ncdf4
+    + dplyr
+    + melt
+    + ggplot2
+    + RColorBrewer (optional)
+* Python packages
+    + numpy
+    + matplotlib
+    + pandas
+    + scipy
+    + scikit

@@ -206,7 +206,7 @@ Now for the actual elevation data
 ```{r}
 br_elevation <- get_elev_raster(
 		locations = map, 
-		z = 6, 
+		z = 5, 
 		clip = "locations") 
 
 br_elevation_df <- as.data.frame(br_elevation, xy = T) %>%
@@ -215,8 +215,10 @@ br_elevation_df <- as.data.frame(br_elevation, xy = T) %>%
 colnames(br_elevation_df)[3] <- "elevation"
 
 br_elevation_df <- br_elevation_df %>% 
+  filter(x <= -30, x >= -80, y <= 10, y >= -40) %>% 
   mutate(elevation = ifelse(elevation > 3000, 3000, elevation), 
          elevation = ifelse(elevation < 0, NA, elevation))
+
 ```
 Note: cutting off elevation at 3000m because the highest point in Brazil is this mountain, so as not to get thrown off by the Andes to the west
 https://en.wikipedia.org/wiki/Pico_da_Neblina#:~:text=Pico%20da%20Neblina%20(Portuguese%20pronunciation,on%20the%20Brazil%2DVenezuela%20border.
@@ -232,6 +234,9 @@ ggplot(map) +
   geom_tile(data = br_elevation_df, 
   			aes(x = x, y = y, fill = elevation)) +
   scale_fill_gradient(low = "white", high = "navy")
+```
+```{r}
+write_csv(br_elevation_df, "~/Documents/extra-projects/un_datathon_2023/elevation_res5.csv")
 ```
 
 

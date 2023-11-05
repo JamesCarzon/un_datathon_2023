@@ -7,8 +7,14 @@ library(dplyr)
 setwd('Desktop/un_datathon_2023')
 
 # Load data ---- 
-# Data downloaded from: https://search.earthdata.nasa.gov/search?fi=TROPOMI&fst0=Atmosphere&fsm0=Atmospheric%20Chemistry&fs10=Nitrogen%20Compounds
-# TO DO: Get date/time + swathes  
+# Data downloaded from: https://search.earthdata.nasa.gov/search/granules?p=C2089270961-GES_DISC&pg[0][v]=f&pg[0][qt]=2021-06-01T21%3A00%3A00.000Z%2C2021-06-02T20%3A59%3A59.000Z&pg[0][gsk]=-start_date&fi=TROPOMI&tl=1699208644!3!!&fst0=Atmosphere&fsm0=Atmospheric%20Chemistry&fs10=Nitrogen%20Compounds
+# Start: 2021-06-01 21:00:00
+# End: 2021-06-02 20:59:59
+# Download three swathes that cover Brazil: 
+# - S5P_RPRO_L2__NO2____20210602T174750_20210602T192920_18846_03_020400_20221106T210853.nc
+# - S5P_RPRO_L2__NO2____20210602T160620_20210602T174750_18845_03_020400_20221106T210852.nc
+# - S5P_RPRO_L2__NO2____20210602T142450_20210602T160620_18844_03_020400_20221106T210851.nc
+# Or, download all, likely more computationally intensive but bounding box below will select correct region
 
 # Define datapath
 datapath <- 'DATA/S5P/'
@@ -84,3 +90,5 @@ no2_df <- data.frame('latitude' = nclat,
                      'NO2mol_prec' = ncno2prec)
 
 write.csv(no2_df, paste0(savepath, 'S5P_no2.csv'), row.names=TRUE)
+
+no2_df <- read.csv(paste0(savepath, 'S5P_no2.csv'), row.names=1)

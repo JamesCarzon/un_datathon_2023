@@ -6,10 +6,15 @@ library(dplyr)
 # Set working directory
 setwd('Desktop/un_datathon_2023')
 
+# Load data ---- 
+# Data downloaded from: https://search.earthdata.nasa.gov/search?fi=TROPOMI&fst0=Atmosphere&fsm0=Atmospheric%20Chemistry&fs10=Nitrogen%20Compounds
+# TO DO: Get date/time + swathes  
+
 # Define datapath
 datapath <- 'DATA/S5P/'
+savepath <- 'DATA/'
 
-# Load nc datasets ----
+# Load nc datasets
 nclat <- c()
 nclon <- c()
 ncno2 <- c()
@@ -78,4 +83,4 @@ no2_df <- data.frame('latitude' = nclat,
                      'NO2mol' = ncno2,
                      'NO2mol_prec' = ncno2prec)
 
-write.csv(no2_df, paste0('DATA/S5P_no2.csv'), row.names=TRUE)
+write.csv(no2_df, paste0(savepath, 'S5P_no2.csv'), row.names=TRUE)

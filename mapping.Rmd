@@ -236,8 +236,32 @@ ggplot(map) +
   scale_fill_gradient(low = "white", high = "navy")
 ```
 ```{r}
-write_csv(br_elevation_df, "~/Documents/extra-projects/un_datathon_2023/elevation_res5.csv")
+write_csv(br_elevation_df, "~/Documents/extra-projects/un_datathon_2023/DATA/elevation_res5.csv")
 ```
 
 
+Now making the boundary box smaller
+```{r}
+rio_window <- st_sfc(st_point(c(-47.5, -24)), #left, bottom
+                        st_point(c(-42.5, -19)), #right, top
+                        crs = 4326)
+
+rio_window_sf <- rio_window %>% 
+  st_transform(crs = target_crs) %>% 
+  st_coordinates()
+
+rio_elev_df <- br_elevation_df %>% 
+  filter(y > -24 & y < -19 & x < -42.5 & x > -47.5)
+```
+Displaying
+```{r}
+ggplot(map) +
+  geom_tile(data = rio_elev_df, 
+  			aes(x = x, y = y, fill = elevation)) +
+  scale_fill_gradient(low = "white", high = "navy") +
+  geom_sf(alpha = 0.1) +
+  coord_sf(xlim = rio_window_sf[, "X"],
+           ylim = rio_window_sf[, "Y"]) +
+  theme_bw()
+```
 

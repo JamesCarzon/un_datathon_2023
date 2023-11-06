@@ -45,14 +45,14 @@ no2_test <- sapply(1:5, function(i) dist_to_closest_factory_type(no2_coord[i,c("
 save(no2_test, file = "DATA/S5P_no2_with_closest_GoalOilGas_id.RData")
 #save(dist_matrix, file = "DATA/S5P_no2_powerplants_dist_matrix.RData")
 
-# Create distance matrix for small bounding box
-proc_data <- read.csv('DATA/processed_data.csv', row.names=1)
-no2_coord <- as.data.frame(proc_data[,c("longitude", "latitude")])
+# Create distance matrix for X_test lat/lon data ----
+X_test <- read.csv('DATA/X_test.csv', row.names=1)
+test_coord <- as.data.frame(X_test[,c("longitude", "latitude")])
 rownames(factory_coord) <- factory_coord$gppd_idnr
 t0 <- Sys.time()
-dist_matrix <- geodist(no2_coord, factory_coord[,c("longitude", "latitude")])
+dist_matrix <- geodist(test_coord, factory_coord[,c("longitude", "latitude")])
 t1 <- Sys.time()
 colnames(dist_matrix) <- factory_coord$gppd_idnr
-write.csv(dist_matrix, paste0('DATA/factory_distmx.csv'))
+write.csv(dist_matrix, paste0('DATA/X_test_distmx.csv'))
 
 

@@ -255,13 +255,16 @@ rio_elev_df <- br_elevation_df %>%
 ```
 Displaying
 ```{r}
-ggplot(map) +
+plot_elev <- ggplot(map) +
   geom_tile(data = rio_elev_df, 
   			aes(x = x, y = y, fill = elevation)) +
   scale_fill_gradient(low = "white", high = "navy") +
   geom_sf(alpha = 0.1) +
   coord_sf(xlim = rio_window_sf[, "X"],
            ylim = rio_window_sf[, "Y"]) +
+  labs(x = "Longitude", y = "Latitude", fill = "Elevation (m)") +
   theme_bw()
+plot_elev
+ggsave("~/Documents/extra-projects/un_datathon_2023/EDA/elevation_plot.jpg")
 ```
 

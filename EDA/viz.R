@@ -75,7 +75,28 @@ ggplot() +
   geom_point(data=urbDens_data, aes(x=longitude, y=latitude, col=log(1+popdens)), size=1, alpha=1) +
   geom_point(data=pPlant_data[between(pPlant_data$latitude, -24, -19) & between(pPlant_data$longitude, -47.5, -42.5) &
                                 pPlant_data$primary_fuel %in% c('Gas', 'Oil', 'Coal'),],
-             aes(x=longitude, y=latitude), col='red', shape = 21)
+             aes(x=longitude, y=latitude), col='green', shape = 21) +
+  xlab('Longitude') +
+  ylab('Latitude') +
+  theme_bw()
+
+ggplot() +
+  geom_point(data=urbDens_data, aes(x=longitude, y=latitude, col=popdens_cat), size=0.6, alpha=1) +
+  scale_color_manual(values = c('<1' = palette[1], 
+                                '1-5' = palette[2], 
+                                '5-25' = palette[3], 
+                                '25-250' = palette[4], 
+                                '250-1,000' = palette[5], 
+                                '>1,000' = palette[6]),
+                     'name'='Persons per km^2') +
+  xlab('Longitude') +
+  ylab('Latitude') +
+  theme_bw()
+ggsave(paste0(savepath, 'popdens_cat.png'),
+       width=7.25,
+       height=6.25,
+       units='in',
+       dpi=300)
 
 ggplot() +
   geom_point(data=urbDens_data, aes(x=longitude, y=latitude, col=popdens_cat), size=0.6, alpha=1) +

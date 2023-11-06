@@ -265,6 +265,6 @@ plot_elev <- ggplot(map) +
   labs(x = "Longitude", y = "Latitude", fill = "Elevation (m)") +
   theme_bw()
 plot_elev
-ggsave("~/Documents/extra-projects/un_datathon_2023/EDA/elevation_plot.jpg")
+ggsave("~/Documents/extra-projects/un_datathon_2023/VIZ/elevation_plot.jpg")
 ```
 

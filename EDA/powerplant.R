@@ -1,6 +1,6 @@
 library(geodist)
 library(dplyr)
-no2 <-  read.csv("DATA/S5P_no2.csv")
+no2 <-  read.csv("DATA/no2_data.csv")
 dat <- read.csv("DATA/global_power_plant_database_v_1_3/global_power_plant_database.csv")
 dat <- dat[dat$country_long %in% c("Argentina", "Bolivia", "Brazil", "Chile", "Colombia", "Ecuador", "Guyana", "Paraguay", "Peru", "Suriname", "Uruguay", "Venezuela"),]
 factory_coord <- as.data.frame(dat[,c("gppd_idnr", "longitude", "latitude","primary_fuel")])
@@ -45,5 +45,14 @@ no2_test <- sapply(1:5, function(i) dist_to_closest_factory_type(no2_coord[i,c("
 save(no2_test, file = "DATA/S5P_no2_with_closest_GoalOilGas_id.RData")
 #save(dist_matrix, file = "DATA/S5P_no2_powerplants_dist_matrix.RData")
 
+# Create distance matrix for small bounding box
+proc_data <- read.csv('DATA/processed_data.csv', row.names=1)
+no2_coord <- as.data.frame(proc_data[,c("longitude", "latitude")])
+rownames(factory_coord) <- factory_coord$gppd_idnr
+t0 <- Sys.time()
+dist_matrix <- geodist(no2_coord, factory_coord[,c("longitude", "latitude")])
+t1 <- Sys.time()
+colnames(dist_matrix) <- factory_coord$gppd_idnr
+write.csv(dist_matrix, paste0('DATA/factory_distmx.csv'))
 
 

@@ -20,8 +20,8 @@ import matplotlib.pyplot as plt
 ```
 
 ```{python}
-data = pd.read_csv("../DATA/processed_data.csv", index_col=0)
-data['elevation'] = 10*scipy.stats.norm.rvs(size=data.shape[0]) # Fake elevation values
+data = pd.read_csv("DATA/processed_data.csv", index_col=0)
+# data['elevation'] = 10*scipy.stats.norm.rvs(size=data.shape[0]) # Fake elevation values
 ```
 
 We specify a Matern kernel with shape parameter 1.5 and with a vector of 
@@ -50,15 +50,17 @@ y = data[['NO2gm']]
 scaler = StandardScaler()
 scaler.fit(X)
 print(scaler.mean_)
-X_scaled = scaler.transform(X)
 
 # Check pre-scaled vs scaled shapes
 X.shape
 X_scaled.shape
 
 X_train, X_test, y_train, y_test = train_test_split(
-  X_scaled, y, test_size=0.30, random_state=2023)
-  
+  X, y, test_size=0.30, random_state=2023)
+
+X_train_scaled = scaler.transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
 # Check train-test shapes
 X_train.shape
 X_test.shape
@@ -77,9 +79,46 @@ model.kernel_.get_params()
 ```
 
 Evaluate model on test set.
-
 ```{python}
 y_pred = model.predict(X_test)
 
 (np.mean((y_pred - np.reshape(y_test, len(y_test)))**2))**(1/2)
+```
+
+Test what happens if you remove certain factories....
+```{python}
+# Save test features to create distance mx
+X_test.to_csv('DATA/X_test.csv')
+
+# Go to powerplant.R script to generate dist mx
+dist_mx = pd.read_csv("DATA/X_test_distmx.csv", index_col=0)
+dist_mx = dist_mx.to_numpy()
+
+# Get "important" factories (i.e. factories which are closest to some pts)
+min_fact_dist_idx = np.argmin(dist_mx, axis=1)
+imp_fact_idxs = np.sort(np.unique(min_fact_dist_idx))
+
+# If we remove factory fact, what are the closest factories?
+diff_mx = np.zeros((dist_mx.shape[0], 10))
+
+# Do in for loop if possible
+i = 9
+fact = imp_fact_idxs[i]
+dist_mx_nofact = np.delete(dist_mx, fact, axis=1)
+min_fact_dist = np.min(dist_mx_nofact, axis=1)
+X_test_rm = X_test
+X_test_rm.loc[:,'plant_dist'] = min_fact_dist
+X_test_rm_scl = scaler.transform(X_test_rm)
+y_test_rm_pred = model.predict(X_test_rm_scl)
+y_test_pred = model.predict(X_test_scaled)
+y_test_diff = y_test_rm_pred - y_test_pred
+diff_mx[:, i] = y_test_diff
+
+diff_mx.sum(axis=0)
+
+diff_df = pd.DataFrame(diff_mx)
+diff_df['latitude'] = X_test[['latitude']].to_numpy()
+diff_df['longitude'] = X_test[['longitude']].to_numpy()
+diff_df.to_csv('DATA/fact_pred_diff.csv')
+
 ```

@@ -111,6 +111,7 @@ X_test_rm.loc[:,'plant_dist'] = min_fact_dist
 X_test_rm_scl = scaler.transform(X_test_rm)
 y_test_rm_pred = model.predict(X_test_rm_scl)
 y_test_pred = model.predict(X_test_scaled)
+# Perhaps we really care about y_test_rm_pred - y_true??
 y_test_diff = y_test_rm_pred - y_test_pred
 diff_mx[:, i] = y_test_diff
 

@@ -123,6 +123,7 @@ ggsave(paste0(savepath, 'popdens_cat_factories.png'),
 # Plot differences
 pred_diffs <- read.csv(paste0(datapath, 'fact_pred_diff.csv'), row.names=1)
 
+# Not sure the same, decreased, increased format is the best way to visualize but it's hard to see what's happening if just plotting values...
 for (i in 1:10) {
   pred_diffs_cat <- c() 
   for (val in pred_diffs[, i]) {

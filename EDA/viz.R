@@ -118,3 +118,37 @@ ggsave(paste0(savepath, 'popdens_cat_factories.png'),
        height=6.25,
        units='in',
        dpi=300)
+
+
+# Plot differences
+pred_diffs <- read.csv(paste0(datapath, 'fact_pred_diff.csv'), row.names=1)
+
+for (i in 1:10) {
+  pred_diffs_cat <- c() 
+  for (val in pred_diffs[, i]) {
+    if (val == 0) {
+      pred_diffs_cat <- c(pred_diffs_cat, 'same')
+    } else if (val < 0) {
+      pred_diffs_cat <- c(pred_diffs_cat, 'decreased')
+    } else {
+      pred_diffs_cat <- c(pred_diffs_cat, 'increased')
+    }
+  }
+  pred_diffs_cat <- factor(pred_diffs_cat, levels=c('decreased', 'same', 'increased'))
+  # pred NO2 without factory - pred NO2 with factory 
+  ggplot() +
+    geom_point(data=pred_diffs, aes(x=longitude, y=latitude, col=pred_diffs_cat), size=1, alpha=1) +
+    scale_color_manual(values = c('decreased' = 'blue', 
+                                  'same' = 'gray', 
+                                  'increased' = 'red'),
+                       'name'='Predicted NO2') +
+    xlab('Longitude') +
+    ylab('Latitude') +
+    theme_bw() +
+    labs(title=paste0('Factory ', i, ' Removal'))
+  ggsave(paste0(savepath, 'effect/factory', i, '.png'),
+         width=7.25,
+         height=6.25,
+         units='in',
+         dpi=300)
+}

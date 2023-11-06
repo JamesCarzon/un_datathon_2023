@@ -60,7 +60,8 @@ X_train, X_test, y_train, y_test = train_test_split(
   X_scaled, y, test_size=0.30, random_state=2023)
   
 # Check train-test shapes
-
+X_train.shape
+X_test.shape
 ```
 
 Fit the model by learning the length scales by MLE, and read the learned 
@@ -68,9 +69,17 @@ parameters.
 
 ```{python}
 t0 = time.time()
-model.fit(X_train, y_train, max)
+model.fit(X_train, y_train)
 t1 = time.time()
 print(t1 - t0)
 
 model.kernel_.get_params()
+```
+
+Evaluate model on test set.
+
+```{python}
+y_pred = model.predict(X_test)
+
+(np.mean((y_pred - np.reshape(y_test, len(y_test)))**2))**(1/2)
 ```

@@ -1,4 +1,10 @@
-# Setup ----
+#'##########################################################################
+## Code for processing NO2 data from NASA EarthData for Brazil
+## mayashen@cmu.edu - Nov 2023
+## NOTES
+#'##########################################################################
+
+# SECTION 0: LOAD LIBRARIES, SET DIRECTORY, ETC ----
 # Load libraries
 library(ncdf4)
 library(dplyr)
@@ -6,7 +12,7 @@ library(dplyr)
 # Set working directory
 setwd('Desktop/un_datathon_2023')
 
-# Load data ---- 
+# SECTION 1: LOAD DATA ----
 # Data downloaded from: https://search.earthdata.nasa.gov/search/granules?p=C2089270961-GES_DISC&pg[0][v]=f&pg[0][qt]=2021-06-01T21%3A00%3A00.000Z%2C2021-06-02T20%3A59%3A59.000Z&pg[0][gsk]=-start_date&fi=TROPOMI&tl=1699208644!3!!&fst0=Atmosphere&fsm0=Atmospheric%20Chemistry&fs10=Nitrogen%20Compounds
 # Start: 2021-06-01 21:00:00
 # End: 2021-06-02 20:59:59
@@ -14,13 +20,13 @@ setwd('Desktop/un_datathon_2023')
 # - S5P_RPRO_L2__NO2____20210602T174750_20210602T192920_18846_03_020400_20221106T210853.nc
 # - S5P_RPRO_L2__NO2____20210602T160620_20210602T174750_18845_03_020400_20221106T210852.nc
 # - S5P_RPRO_L2__NO2____20210602T142450_20210602T160620_18844_03_020400_20221106T210851.nc
-# Or, download all, likely more computationally intensive but bounding box below will select correct region
+# Or, download all (likely more computationally intensive but bounding box below will select correct region)
 
 # Define datapath
 datapath <- 'DATA/S5P/'
 savepath <- 'DATA/'
 
-# Load nc datasets
+# Load NO2 datasets
 nclat <- c()
 nclon <- c()
 ncno2 <- c()
@@ -39,7 +45,7 @@ for (nc_fname in list.files(datapath)) {
   ncno2prec <- c(ncno2prec, unlist(no2prec))
 }
 
-# Subset points ----
+# SECTION 2: BOUNDING BOX ----
 # Get points within bounding box of Brazil
 # lat = [-35, 5], lon = [-75, -35]
 bbox_bool <- between(nclat, -35, 5) & between(nclon, -75, -35)
@@ -51,6 +57,7 @@ ncno2 <- ncno2[bbox_bool]
 ncno2prec <- ncno2prec[bbox_bool]
 
 all(is.na(no2) == is.na(no2prec)) # NO2 is NA iff NO2 precision is NA
+
 # Only keep points with non-NA NO2 readings
 na_bool <- !is.na(ncno2)
 nclon <- nclon[na_bool]
@@ -59,10 +66,11 @@ ncno2 <- ncno2[na_bool]
 ncno2prec <- ncno2prec[na_bool]
 
 length(ncno2) # 5632650 points
+
 # Check that lengths are all the same 
 length(unique(c(length(nclon), length(nclat), length(ncno2), length(ncno2prec)))) == 1
 
-# Plotting ----
+# SECTION 3: PLOTTING ----
 # Plot all points - takes some time to run
 # plot(nclon, nclat,
 #      col = rgb(red = 0, green = 0, blue = 1, alpha = 0.2),
@@ -80,7 +88,7 @@ plot(nclon[smp], nclat[smp],
      xlab='longitude',
      ylab='latitude')
 
-# Save dataframe ---- 
+# SECTION 4: SAVE BRAZIL NO2 DATA ----
 # mols per m^2
 # multiply by 46 to get grams per m^2
 no2_df <- data.frame('latitude' = nclat,

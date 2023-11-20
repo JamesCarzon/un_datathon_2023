@@ -21,16 +21,19 @@ Background and Question Statement: Air pollution has become a global health issu
 “Is elevation in factory location associated with the amount of nitrogen dioxide?”
 
 Specifically, nitrogen dioxide (known as NO2) is a common pollutant caused by both human activity and factory emissions. Pollutants such as NO2 tend to be trapped in low-level regions due to thermal inversion — a phenomenon where warmer air rises up and forms a blanket trapping harmful pollutants underneath. Through this question, our team hopes to
-Visualize the region with high concentrations of NO2, in combination with urban density and factory locations. 
-Quantify the relative impact of a factory's location on pollution in comparison to other factors. 
-Suggest areas for future policy investigation, such as how the amount of NO2 would change if a factory is shut down, whether zoning improves NO2 circulation, etc.
+1. Visualize the region with high concentrations of NO2, in combination with urban density and factory locations. 
+2. Quantify the relative impact of a factory's location on pollution in comparison to other factors. 
+3. Suggest areas for future policy investigation, such as how the amount of NO2 would change if a factory is shut down, whether zoning improves NO2 circulation, etc.
 
 # Analysis
-Describe Gaussian Process model. 
+We use Gaussian process to model the relationship between $NO_2$ concentration, urban density, presence of factories, and geographical factors. 
+TODO: Describe in details.
 
 # Results 
+Elevation does not matter.
+TODO: Re-run the results and interpret the number. 
 TODO: Link to Peem's video submission 
-Our final submission can be linked here []
+
 # Usage
 
 The work in this repo depends on the following requirements:

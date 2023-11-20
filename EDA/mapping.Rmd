@@ -98,7 +98,7 @@ ggplot(map) +
   			aes(x = x, y = y, fill = elevation)) +
   scale_fill_gradient(low = "white", high = "navy")
 ```
-Save elevation data as a csv
+Save elevation data as a csv-- save locally, but cannot be saved on github because it's too large
 ```{r}
 write_csv(br_elevation_df, "../DATA/elevation_res5.csv")
 ```

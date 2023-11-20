@@ -11,7 +11,7 @@ The collaborators in this project are PhD students in the Department of Statisti
 # Dataset 
 TODO: Describe some EDA and pre-processing steps. If possible, also discuss the trefsfsf
 - Power Plant Data (Anni) 
-- NO2 data (Peem, James)
+- NO2 data: Sentinel-5P TROPOMI Tropospheric NO2 data downloaded from NASA EarthData. Details can be found in the EDA/no2_data_processing.R script
 - Urban density data (Maya)
 - Topographical and geographical data (Meg): Accessing the R-package on elevation, lat/long. 
 

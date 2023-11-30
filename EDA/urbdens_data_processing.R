@@ -223,6 +223,6 @@ ggplot(data=popdensyr_bbox_df, aes(x=longitude, y=latitude, col=popdens_cat)) +
 #        dpi=300)
 
 # SECTION 4: SAVE BRAZIL URBAN DENSITY DATA ----
-write.csv(popdensyr_bbox_df, paste0(save_datapath, 'urbDens_data.csv'), row.names=TRUE)
+write.csv(popdensyr_bbox_df, paste0(save_datapath, 'urbdens_data.csv'), row.names=TRUE)
 
-# popdensyr_bbox_df <- read.csv(paste0(save_datapath, 'urbDens_data.csv'), row.names=1)
+# popdensyr_bbox_df <- read.csv(paste0(save_datapath, 'urbdens_data.csv'), row.names=1)

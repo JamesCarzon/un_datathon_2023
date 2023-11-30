@@ -39,10 +39,14 @@ where $k=5$ is the number of explanatory variables in the Gaussian process. The 
 
 # Results 
 
-Elevation does not matter.
-TODO: Re-run the results and interpret the number. 
-TODO: Link to Peem's video submission 
+The deliverables for our UN Datathon 2023 project are our [powerpoint](https://drive.google.com/file/d/1m2bFfDJ8xeREO-bzSNmrWURFeNXjQsOX/view?usp=sharing) and our [video presentation](https://drive.google.com/file/d/1xVEwX9tHuD6X21UOL6cdZXk3lgGcJJHG/view?usp=drive_link). 
 
+After the project concludes, we modified some part of the computation process and re-analyzed the results. The key takeaways are:
+
+1. Elevation does not matter.
+2. Presence of nearby factories is the best predictor of the concentration of $NO_2$.
+   
+TODO: Analyze in details. 
 # Usage
 
 The work in this repo depends on the following requirements:

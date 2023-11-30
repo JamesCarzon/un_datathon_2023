@@ -22,8 +22,8 @@ setwd('Desktop/un_datathon_2023')
 # - S5P_RPRO_L2__NO2____20210602T142450_20210602T160620_18844_03_020400_20221106T210851.nc
 # Or, download all (likely more computationally intensive but bounding box below will select correct region)
 
-# Define datapath
-datapath <- 'DATA/S5P/'
+# Define loadpath
+loadpath <- 'DATA/S5P/'
 savepath <- 'DATA/'
 
 # Load NO2 datasets
@@ -32,9 +32,9 @@ nclon <- c()
 ncno2 <- c()
 ncno2prec <- c()
 ctr <- 1
-for (nc_fname in list.files(datapath)) {
+for (nc_fname in list.files(loadpath)) {
   print(nc_fname)
-  ncin <- nc_open(paste0(datapath, nc_fname))
+  ncin <- nc_open(paste0(loadpath, nc_fname))
   lon <- ncvar_get(ncin,"PRODUCT/longitude")
   lat <- ncvar_get(ncin,"PRODUCT/latitude")
   no2 <- ncvar_get(ncin,"PRODUCT/nitrogendioxide_tropospheric_column")
@@ -97,6 +97,6 @@ no2_df <- data.frame('latitude' = nclat,
                      'NO2mol' = ncno2,
                      'NO2mol_prec' = ncno2prec)
 
-write.csv(no2_df, paste0(savepath, 'S5P_no2.csv'), row.names=TRUE)
+write.csv(no2_df, paste0(savepath, 'no2_data.csv'), row.names=TRUE)
 
-no2_df <- read.csv(paste0(savepath, 'S5P_no2.csv'), row.names=1)
+# no2_df <- read.csv(paste0(savepath, 'no2_data.csv'), row.names=1)

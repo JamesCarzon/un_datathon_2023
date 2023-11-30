@@ -27,16 +27,16 @@ Specifically, nitrogen dioxide (known as NO2) is a common pollutant caused by bo
 
 # Analysis
 We model $NO_2$ concentration as a Gaussian process with four parameters — latitude, longitude, elevation, urban density, and the presence of nearby factors. 
-Let $X = (lat, long, ele, \mathds{I}(nearby factory), ub)$. Here, $lat$, $long$, and $ele$ denote the latitude, longitude, and elevation of each location on a grid map. Also, 
-$\mathds{I}(factory)$ denotes whether a location has at least one factory nearby. Lastly, $ub$ denotes urban density (how many people reside within a location). 
+
+Let $X = (lat, long, ele, I(factory), ub)$. Here, $lat$, $long$, and $ele$ denote the latitude, longitude, and elevation of each location on a grid map. Similarly, $I(factory)$ denotes whether a location has at least one factory nearby. Lastly, $ub$ denotes urban density (how many people reside within a location). 
 
 First, we pre-process $X$ such that $\lvert \lvert X \rvert \rvert_{\infty} \leq 1$. Afterwards, the concetration of $NO_2$ at each location is modelled as a Gaussian process, namely:
 
 $$E[NO_{2}] \sim \beta(X)$$ and
 
-$$Cov(NO_{2}(x_i), NO_2(x_j)) \sim \exp \left(\sum\limits_{k \in [K]} \frac{(x_i^k - x_j^k)^2}{\gamma^k}\right)$$ 
+$$Cov(NO_{2}(x_i), NO_2(x_j)) \sim \exp \left(\sum\limits_{k \in [K]} \frac{(x_i^k - x_j^k)^2}{\gamma^k}\right),$$ 
 
-The goal is to model $\gamma$.
+where $k=5$ is the number of explanatory variables in the Gaussian process. The goal is to draw inference on the parameter $\gamma$.
 
 # Results 
 

@@ -46,7 +46,7 @@ for (nc_fname in list.files(loadpath)) {
 }
 
 # SECTION 2: BOUNDING BOX ----
-# Get points within bounding box of Brazil
+## Get points within bounding box of Brazil ----
 # lat = [-35, 5], lon = [-75, -35]
 bbox_bool <- between(nclat, -35, 5) & between(nclon, -75, -35)
 sum(bbox_bool) # 596531 points in bounding box

@@ -1,7 +1,6 @@
 # About
 
-This repository contains the work of the Scotty XD team for the United Nations Datathon, which occurred November 3rd to November 6th, 2023. 
-The collaborators in this project are PhD students in the Department of Statistics and Data Science at Carnegie Mellon University, namely:
+This repository contains the work of the Scotty XD team for the United Nations Datathon, which occurred November 3rd to November 6th, 2023.  The collaborators in this project are PhD students in the Department of Statistics and Data Science at Carnegie Mellon University, namely:
 1. James Carzon
 2. Margaret Ellingwood
 3. Anni Hong
@@ -32,7 +31,7 @@ Let $X = (lat, long, ele, I(factory), ub)$. Here, $lat$, $long$, and $ele$ denot
 
 First, we pre-process $X$ such that $\lvert \lvert X \rvert \rvert_{\infty} \leq 1$. Afterwards, the concetration of $NO_2$ at each location is modelled as a Gaussian process, namely:
 
-$$E[NO_{2}] \sim \beta(X)$$ and
+$$E[NO_{2}] \sim \beta \cdot X$$ and
 
 $$Cov(NO_{2}(x_i), NO_2(x_j)) \sim \exp \left(\sum\limits_{k \in [K]} \frac{(x_i^k - x_j^k)^2}{\gamma^k}\right),$$ 
 

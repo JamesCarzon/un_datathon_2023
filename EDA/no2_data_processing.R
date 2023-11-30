@@ -5,11 +5,11 @@
 #'##########################################################################
 
 # SECTION 0: LOAD LIBRARIES, SET DIRECTORY, ETC ----
-# Load libraries
+## Load libraries ----
 library(ncdf4)
 library(dplyr)
 
-# Set working directory
+## Set working directory ----
 setwd('Desktop/un_datathon_2023')
 
 # SECTION 1: LOAD DATA ----
@@ -22,11 +22,11 @@ setwd('Desktop/un_datathon_2023')
 # - S5P_RPRO_L2__NO2____20210602T142450_20210602T160620_18844_03_020400_20221106T210851.nc
 # Or, download all (likely more computationally intensive but bounding box below will select correct region)
 
-# Define loadpath
+## Define save/load data paths ----
 loadpath <- 'DATA/S5P/'
 savepath <- 'DATA/'
 
-# Load NO2 datasets
+## Load NO2 datasets ----
 nclat <- c()
 nclon <- c()
 ncno2 <- c()
@@ -58,6 +58,7 @@ ncno2prec <- ncno2prec[bbox_bool]
 
 all(is.na(no2) == is.na(no2prec)) # NO2 is NA iff NO2 precision is NA
 
+## Remove NA NO2 readings ----
 # Only keep points with non-NA NO2 readings
 na_bool <- !is.na(ncno2)
 nclon <- nclon[na_bool]
@@ -71,14 +72,15 @@ length(ncno2) # 5632650 points
 length(unique(c(length(nclon), length(nclat), length(ncno2), length(ncno2prec)))) == 1
 
 # SECTION 3: PLOTTING ----
-# Plot all points - takes some time to run
+## Plot all points ----
+# Nore: takes some time to run
 # plot(nclon, nclat,
 #      col = rgb(red = 0, green = 0, blue = 1, alpha = 0.2),
 #      pch=19, cex=0.2,
 #      xlab='longitude',
 #      ylab='latitude')
 
-# Plot sample of points
+## Plot sample of points ----
 set.seed(42)
 smp <- sample(1:length(nclon), 10000, replace=F)
 

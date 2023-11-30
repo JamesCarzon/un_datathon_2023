@@ -26,10 +26,16 @@ Specifically, nitrogen dioxide (known as NO2) is a common pollutant caused by bo
 3. Suggest areas for future policy investigation, such as how the amount of NO2 would change if a factory is shut down, whether zoning improves NO2 circulation, etc.
 
 # Analysis
+We model $NO_2$ concentration as a Gaussian process with four parameters — latitude, longitude, elevation, urban density, and the presence of nearby factors. 
+Let $X = (lat, long, ele, \mathds{I}(nearby factory), ub)$. Here, $lat$, $long$, and $ele$ denote the latitude, longitude, and elevation of each location on a grid map. Also, 
+$\mathds{I}(nearby factory)$ denotes whether a location has at least one factory nearby. Lastly, $ub$ denotes urban density (how many people reside within a location). 
+Using this equation, 
+$$E[NO_{2}] \sim lat + long + ele + \mathds{I}(nearby factories) + urban desnsity$$ 
 We use Gaussian process to model the relationship between $NO_2$ concentration, urban density, presence of factories, and geographical factors. 
 TODO: Describe in details.
 
 # Results 
+
 Elevation does not matter.
 TODO: Re-run the results and interpret the number. 
 TODO: Link to Peem's video submission 

@@ -135,7 +135,7 @@ print(t1-t0)
 slice <- 5
 popdensyr <- popdens[,,slice]
 
-# SECTION 3: BOUNDING BOX ----
+# SECTION 3: BRAZIL BOUNDING BOX ----
 ## Get points within bounding box of Brazil ----
 # lat = [-35, 5], lon = [-75, -35]
 lon_bbox_bool <- between(lon, -75, -35)
@@ -172,7 +172,7 @@ ggplot(data=popdensyr_bbox_df, aes(x=longitude, y=latitude, col=log(popdens))) +
 #        units='in',
 #        dpi=300)
 
-## Plot population density grouped according to web plots ----
+## Plot population density binned according to web plots ----
 # https://sedac.ciesin.columbia.edu/data/set/gpw-v4-population-density-rev11/maps
 
 cat_popdens_mx <- matrix(NA, nrow=length(popdensyr_bbox_df$popdens), ncol=6)
